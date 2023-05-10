@@ -1,7 +1,7 @@
 import React from "react";
 import Input from "../Comman/Input";
 import CommanButton from "../Comman/CommanButton";
-import userProfile from "../Image/user.png";
+import userProfile from "../Components/Image/60111.jpg"
 
 export default function UserForm({
     handleChange,

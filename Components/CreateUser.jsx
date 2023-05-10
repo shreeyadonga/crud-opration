@@ -28,6 +28,9 @@ export default function CreateUser() {
     const [filesize, setFileSize] = useState();
     const [validate, setIsValidate] = useState(false);
 
+    let errors = {};
+    let valid = true;
+
     useEffect(() => {
         let userData = JSON.parse(localStorage.getItem("userData"));
         if (userData) {
@@ -66,17 +69,7 @@ export default function CreateUser() {
     };
 
     const handleImgChange = (e) => {
-        let profileImageFileSize = e.target.files[0]?.size;
-        setFileSize(profileImageFileSize);
-        // let file = e.target.files[0];
-        // if (file) {
-        //   let reader = new FileReader();
-        //   reader.onload = (e) => {
-        //     const image = e.target.result;
-        //     setImg(image);
-        //   };
-        //   reader.readAsDataURL(file);
-        // }
+        setFileSize(e?.target?.files[0]?.size);
         let reader = new FileReader();
         reader.onload = (e) => {
             const image = e.target.result;
@@ -87,94 +80,26 @@ export default function CreateUser() {
             ...error,
             profileImage: "",
         });
+        handleImageValidate(e?.target?.files[0]?.size)
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (userValidationForm(e, input)) {
-            const setUser = {
-                id: uuidv4(),
-                name: input?.name,
-                email: input?.email,
-                phoneNumber: input?.phoneNumber,
-                password: input?.password,
-                confirmPassword: input?.confirmPassword,
-                profileImage: img,
-            };
-            localStorage.setItem("userData", JSON.stringify([...userList, setUser]));
-            if (userList?.length === 0) {
-                setUserList([setUser]);
-            } else {
-                setUserList([...userList, setUser]);
-            }
-            clearAll();
-        }
-        setIsValidate(true);
-    };
-
-    const handleDelete = (id) => {
-        if (window.confirm("Are you sure to delete this record ?")) {
-            let deleteItem = userList.filter((user) => {
-                return user.id !== id;
-            });
-            localStorage.setItem("userData", JSON.stringify(deleteItem));
-            setUserList(deleteItem);
-        }
-    };
-
-    const handleEdit = (id) => {
-        let editItem = userList.filter((user, e) => {
-            if (user?.id === id) {
-                return user;
-            }
-        });
-        setIsEdit(false);
-        setEdit(id);
-        setInput(editItem[0]);
-        setImg(editItem[0]?.profileImage);
-    };
-
-    const handleUpdate = (e) => {
-        if (userValidationForm(e)) {
-            let updatedItem = userList?.map((user) => {
-                let updatedData = {
-                    id: edit,
-                    name: input?.name,
-                    email: input?.email,
-                    phoneNumber: input?.phoneNumber,
-                    password: input?.password,
-                    confirmPassword: input?.confirmPassword,
-                    profileImage: img,
-                };
-                if (user.id === edit) {
-                    return updatedData;
-                }
-                return user;
-            });
-            setUserList(updatedItem);
-            localStorage.setItem("userData", JSON.stringify(updatedItem));
-            setIsEdit(true);
-            clearAll();
-        }
-    };
-
-    const userValidationForm = (name, value) => {
-        let errors = {};
-        let valid = true;
-
-        const checkName = isEdit ? name === "Submit" : name === "Update";
-
-        debugger;
+    const handleImageValidate = (imageSize) => {
+        debugger
         //image validation
-        if (img === "") {
+        if (imageSize===undefined|| imageSize==="") {
             errors.profileImage = "Please select image.";
             valid = false;
-        } else if (filesize >= 500000) {
+        } else if (imageSize >= 500000) {
             errors.profileImage = "Please select file less 500kb";
             valid = false;
         } else {
             errors.profileImage = "";
         }
+    }
+
+    const userValidationForm = (name, value) => {
+
+        const checkName = isEdit ? name === "Submit" : name === "Update";
 
         // Name vallidation
         const regxName = /^[a-zA-Z]+$/;
@@ -256,6 +181,76 @@ export default function CreateUser() {
 
         setError({ ...error, ...errors });
         return valid;
+    };
+
+    const handleSubmit = (e) => {
+        const userfrom = userValidationForm(e, input)
+        const imageform = handleImageValidate(filesize)
+        if (userfrom || imageform) {
+            const setUser = {
+                id: uuidv4(),
+                name: input?.name,
+                email: input?.email,
+                phoneNumber: input?.phoneNumber,
+                password: input?.password,
+                confirmPassword: input?.confirmPassword,
+                profileImage: img,
+            };
+            localStorage.setItem("userData", JSON.stringify([...userList, setUser]));
+            if (userList?.length === 0) {
+                setUserList([setUser]);
+            } else {
+                setUserList([...userList, setUser]);
+            }
+            clearAll();
+        }
+        setIsValidate(true);
+    };
+
+    const handleDelete = (id) => {
+        if (window.confirm("Are you sure to delete this record ?")) {
+            let deleteItem = userList.filter((user) => {
+                return user.id !== id;
+            });
+            localStorage.setItem("userData", JSON.stringify(deleteItem));
+            setUserList(deleteItem);
+        }
+    };
+
+    const handleEdit = (id) => {
+        let editItem = userList.filter((user, e) => {
+            if (user?.id === id) {
+                return user;
+            }
+        });
+        setIsEdit(false);
+        setEdit(id);
+        setInput(editItem[0]);
+        setImg(editItem[0]?.profileImage);
+    };
+
+    const handleUpdate = (e) => {
+        if (userValidationForm(e)) {
+            let updatedItem = userList?.map((user) => {
+                let updatedData = {
+                    id: edit,
+                    name: input?.name,
+                    email: input?.email,
+                    phoneNumber: input?.phoneNumber,
+                    password: input?.password,
+                    confirmPassword: input?.confirmPassword,
+                    profileImage: img,
+                };
+                if (user.id === edit) {
+                    return updatedData;
+                }
+                return user;
+            });
+            setUserList(updatedItem);
+            localStorage.setItem("userData", JSON.stringify(updatedItem));
+            setIsEdit(true);
+            clearAll();
+        }
     };
 
     const togglePassword = () => {

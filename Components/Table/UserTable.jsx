@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Table from "react-bootstrap/Table";
 import CommanButton from "../../Comman/CommanButton";
-import ModalDialog from "../../Comman/ModalDialog";
 
 export default function UserTable({
   userList,
@@ -56,12 +55,6 @@ export default function UserTable({
                     name={"Delete"}
                     btnText={"Delete"}
                     classname={"bg-danger border border-danger"}
-                  />
-                  <ModalDialog
-                    show={show}
-                    input={input}
-                    handleClose={handleClose}
-                    handleShow={handleShow}
                   />
                 </td>
               </tr>
